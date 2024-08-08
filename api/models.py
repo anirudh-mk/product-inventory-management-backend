@@ -28,12 +28,21 @@ class Products(models.Model):
         ordering = ("-CreatedDate", "ProductID")
 
 
-class ProductAttribute(models.Model):
-    product = models.ForeignKey(Products, related_name='product_attribute_product', on_delete=models.CASCADE)
+class Variant(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    product = models.ForeignKey(Products, related_name='products_variant_product', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    option = models.CharField(max_length=255)
 
     class Meta:
-        db_table = "product_attribute"
-        verbose_name = _("product attribute")
-        verbose_name_plural = _("product attributes")
+        db_table = "products_variant"
+        unique_together = (("product", "name"),)
+
+
+class SubVariant(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    variant = models.ForeignKey(Variant, related_name='products_subvariant_variant', on_delete=models.CASCADE)
+    options = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = "products_subvariant"
+        unique_together = (("variant", "options"),)

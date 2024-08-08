@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'api',
     'versatileimagefield',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

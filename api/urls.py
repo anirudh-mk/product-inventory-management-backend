@@ -1,3 +1,8 @@
 from django.urls import path
 
-urlpatterns = []
+from api import views
+
+urlpatterns = [
+    path('product/create/', views.ProductAPI.as_view())
+
+]

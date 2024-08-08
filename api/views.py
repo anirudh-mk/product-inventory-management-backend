@@ -18,15 +18,20 @@ class ProductAPI(APIView):
             return Response('product created successfully', status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request):
-        product_queryset = Products.objects.all()
+    def get(self, request, id=None):
+        if id:
+            product_queryset = Products.objects.filter(id=id).first()
+            serializer = ProductSerializer(product_queryset, many=False)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            product_queryset = Products.objects.all()
 
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        page = paginator.paginate_queryset(product_queryset, request)
+            paginator = PageNumberPagination()
+            paginator.page_size = 10
+            page = paginator.paginate_queryset(product_queryset, request)
 
-        serializer = ProductSerializer(page, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            serializer = ProductSerializer(page, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class StockAPI(APIView):

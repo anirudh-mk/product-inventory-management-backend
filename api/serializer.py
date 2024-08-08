@@ -1,6 +1,8 @@
+import uuid
+
 from rest_framework import serializers
 from .models import Products, Variant, SubVariant
-
+from django.contrib.auth.models import User
 
 class SubVariantSerializer(serializers.ModelSerializer):
     class Meta:
@@ -67,3 +69,14 @@ class StockCreateSerializer(serializers.ModelSerializer):
             SubVariant.objects.create(variant=variant, options=option)
         return variant
 
+
+class UserRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'password',
+        ]

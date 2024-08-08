@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.models import Products, Variant
-from api.serializer import ProductSerializer, VariantSerializer, StockCreateSerializer
+from api.serializer import ProductSerializer, StockCreateSerializer, UserRegisterSerializer
 from rest_framework.pagination import PageNumberPagination
 
 
@@ -51,3 +51,13 @@ class StockAPI(APIView):
 
         variant_instance.delete()
         return Response({"success": "product deleted successfully"}, status=status.HTTP_200_OK)
+
+
+class UserRegisterAPI(APIView):
+    def post(self, request):
+        serializer = UserRegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data='user created successfully',status=status.HTTP_201_CREATED)
+
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

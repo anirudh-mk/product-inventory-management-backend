@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from api.models import Products
+from api.models import Products, Variant
 from api.serializer import ProductSerializer, VariantSerializer
 from rest_framework.pagination import PageNumberPagination
 
@@ -37,4 +37,11 @@ class StockAPI(APIView):
             return Response('stock added successfully', status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, id):
+        variant_instance = Variant.objects.filter(id=id).first()
 
+        if not variant_instance:
+            return Response({"error": "product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        variant_instance.delete()
+        return Response({"success": "product deleted successfully"}, status=status.HTTP_200_OK)

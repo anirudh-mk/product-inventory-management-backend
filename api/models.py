@@ -26,3 +26,14 @@ class Products(models.Model):
         verbose_name_plural = _("products")
         unique_together = (("ProductCode", "ProductID"),)
         ordering = ("-CreatedDate", "ProductID")
+
+
+class ProductAttribute(models.Model):
+    product = models.ForeignKey(Products, related_name='product_attribute_product', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    option = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = "product_attribute"
+        verbose_name = _("product attribute")
+        verbose_name_plural = _("product attributes")

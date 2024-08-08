@@ -9,15 +9,22 @@ class SubVariantSerializer(serializers.ModelSerializer):
 
 
 class VariantSerializer(serializers.ModelSerializer):
-    options = SubVariantSerializer(many=True, source='products_subvariant_variant')
+    options = serializers.ListField(child=serializers.CharField(), write_only=True)
 
     class Meta:
         model = Variant
         fields = ['name', 'options']
 
+    def create(self, validated_data):
+        options = validated_data.pop('options')
+        variant = Variant.objects.create(**validated_data)
+        for option in options:
+            SubVariant.objects.create(variant=variant, options=option)
+        return variant
+
 
 class ProductSerializer(serializers.ModelSerializer):
-    variants = VariantSerializer(many=True, source='products_variant_product')
+    variants = VariantSerializer(many=True)
 
     class Meta:
         model = Products
@@ -37,11 +44,8 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        variants_data = validated_data.pop('products_variant_product')
+        variants_data = validated_data.pop('variants')
         product = Products.objects.create(**validated_data)
         for variant_data in variants_data:
-            options_data = variant_data.pop('products_subvariant_variant')
-            variant = Variant.objects.create(product=product, **variant_data)
-            for option_data in options_data:
-                SubVariant.objects.create(variant=variant, **option_data)
+            VariantSerializer().create({**variant_data, 'product': product})
         return product

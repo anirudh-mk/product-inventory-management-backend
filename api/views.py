@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.models import Products, Variant
-from api.serializer import ProductSerializer, VariantSerializer
+from api.serializer import ProductSerializer, VariantSerializer, StockCreateSerializer
 from rest_framework.pagination import PageNumberPagination
 
 
@@ -36,7 +36,8 @@ class ProductAPI(APIView):
 
 class StockAPI(APIView):
     def post(self, request):
-        serializer = VariantSerializer(data=request.data)
+        product = request.data.get('product')
+        serializer = StockCreateSerializer(data=request.data, context={'product': product})
         if serializer.is_valid():
             serializer.save()
             return Response('stock added successfully', status=status.HTTP_200_OK)

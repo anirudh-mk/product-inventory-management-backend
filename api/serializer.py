@@ -23,11 +23,6 @@ class VariantSerializer(serializers.ModelSerializer):
             SubVariant.objects.create(variant=variant, options=option)
         return variant
 
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-    #     representation.pop('product', None)
-    #     return representation
-
 
 class ProductSerializer(serializers.ModelSerializer):
     variants = VariantSerializer(many=True)
@@ -56,3 +51,19 @@ class ProductSerializer(serializers.ModelSerializer):
         for variant_data in variants_data:
             VariantSerializer().create({**variant_data, 'product': product})
         return product
+
+
+class StockCreateSerializer(serializers.ModelSerializer):
+    options = serializers.ListField(child=serializers.CharField(), write_only=True)
+
+    class Meta:
+        model = Variant
+        fields = ['name', 'options', 'product']
+
+    def create(self, validated_data):
+        options = validated_data.pop('options', [])
+        variant = Variant.objects.create(**validated_data)
+        for option in options:
+            SubVariant.objects.create(variant=variant, options=option)
+        return variant
+

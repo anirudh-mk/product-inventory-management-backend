@@ -30,7 +30,7 @@ class Products(models.Model):
 
 class Variant(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    product = models.ForeignKey(Products, related_name='products_variant_product', on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, related_name='variants', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
 
     class Meta:
@@ -40,7 +40,7 @@ class Variant(models.Model):
 
 class SubVariant(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    variant = models.ForeignKey(Variant, related_name='products_subvariant_variant', on_delete=models.CASCADE)
+    variant = models.ForeignKey(Variant, related_name='sub_variants', on_delete=models.CASCADE)
     options = models.CharField(max_length=255)
 
     class Meta:

@@ -9,11 +9,12 @@ class SubVariantSerializer(serializers.ModelSerializer):
 
 
 class VariantSerializer(serializers.ModelSerializer):
+    sub_variants = SubVariantSerializer(many=True, read_only=True)
     options = serializers.ListField(child=serializers.CharField(), write_only=True)
 
     class Meta:
         model = Variant
-        fields = ['name', 'options']
+        fields = ['name', 'options', 'sub_variants']
 
     def create(self, validated_data):
         options = validated_data.pop('options')

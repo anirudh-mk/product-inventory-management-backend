@@ -5,6 +5,7 @@ from rest_framework import status
 
 from api.models import Products
 from api.serializer import ProductSerializer
+from rest_framework.pagination import PageNumberPagination
 
 
 # Create your views here.
@@ -19,5 +20,10 @@ class ProductAPI(APIView):
 
     def get(self, request):
         product_queryset = Products.objects.all()
-        serializer = ProductSerializer(product_queryset, many=True)
+
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        page = paginator.paginate_queryset(product_queryset, request)
+
+        serializer = ProductSerializer(page, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

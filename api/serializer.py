@@ -14,7 +14,7 @@ class VariantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Variant
-        fields = ['name', 'options', 'sub_variants']
+        fields = ['name', 'options', 'sub_variants', 'product']
 
     def create(self, validated_data):
         options = validated_data.pop('options')
@@ -22,6 +22,11 @@ class VariantSerializer(serializers.ModelSerializer):
         for option in options:
             SubVariant.objects.create(variant=variant, options=option)
         return variant
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation.pop('product', None)
+        return representation
 
 
 class ProductSerializer(serializers.ModelSerializer):

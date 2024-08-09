@@ -8,12 +8,13 @@ from api.models import Products, Variant
 from api.serializer import ProductSerializer, StockCreateSerializer, UserRegisterSerializer
 from rest_framework.pagination import PageNumberPagination
 
-from utils.permissions import JWTToken
+from utils.permissions import JWTToken, CustamizePermission
 
 
 # Create your views here.
-
 class ProductAPI(APIView):
+    authentication_classes = [CustamizePermission]
+
     def post(self, request):
         serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
@@ -38,6 +39,7 @@ class ProductAPI(APIView):
 
 
 class StockAPI(APIView):
+    authentication_classes = [CustamizePermission]
     def post(self, request):
         product = request.data.get('product')
         serializer = StockCreateSerializer(data=request.data, context={'product': product})

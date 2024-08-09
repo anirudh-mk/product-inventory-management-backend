@@ -3,7 +3,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
+import math
 from api.models import Products, Variant
 from api.serializer import ProductSerializer, StockCreateSerializer, UserRegisterSerializer
 from rest_framework.pagination import PageNumberPagination
@@ -29,7 +29,7 @@ class ProductAPI(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             product_queryset = Products.objects.all()
-            pages = round(product_queryset.count()/10)
+            pages = math.ceil(product_queryset.count()/10)
             paginator = PageNumberPagination()
             paginator.page_size = 10
             page = paginator.paginate_queryset(product_queryset, request)
@@ -40,6 +40,7 @@ class ProductAPI(APIView):
 
 class StockAPI(APIView):
     authentication_classes = [CustamizePermission]
+
     def post(self, request):
         product = request.data.get('product')
         serializer = StockCreateSerializer(data=request.data, context={'product': product})

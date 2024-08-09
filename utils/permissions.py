@@ -67,7 +67,7 @@ class JWTToken:
         # check user is present
         if user is not None:
             # set access token expiry time
-            access_expiry_time = datetime.now() + timedelta(minutes=5)
+            access_expiry_time = datetime.now() + timedelta(minutes=30)
             access_expiry = access_expiry_time.strftime("%d/%m/%Y %H:%M:%S")
 
             # generate access token

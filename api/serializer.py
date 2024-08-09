@@ -40,7 +40,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'CreatedDate',
             'ProductImage',
             'UpdatedDate',
-            'CreatedUser',
             'IsFavourite',
             'Active',
             'HSNCode',
@@ -50,7 +49,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         variants_data = validated_data.pop('variants')
-        product = Products.objects.create(**validated_data)
+        user = self.context.get('user')
+        product = Products.objects.create(CreatedUser=user, **validated_data)
         for variant_data in variants_data:
             VariantSerializer().create({**variant_data, 'product': product})
         return product

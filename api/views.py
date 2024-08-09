@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -16,7 +15,8 @@ class ProductAPI(APIView):
     authentication_classes = [CustamizePermission]
 
     def post(self, request):
-        serializer = ProductSerializer(data=request.data)
+        user = request.user
+        serializer = ProductSerializer(data=request.data, context={'user':user})
         if serializer.is_valid():
             serializer.save()
             return Response('product created successfully', status=status.HTTP_200_OK)

@@ -28,13 +28,13 @@ class ProductAPI(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             product_queryset = Products.objects.all()
-
+            pages = round(product_queryset.count()/10)
             paginator = PageNumberPagination()
             paginator.page_size = 10
             page = paginator.paginate_queryset(product_queryset, request)
 
             serializer = ProductSerializer(page, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'response': serializer.data, 'pages': pages}, status=status.HTTP_200_OK)
 
 
 class StockAPI(APIView):

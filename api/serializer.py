@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import Products, Variant, SubVariant
 from django.contrib.auth.models import User
 
+
 class SubVariantSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubVariant

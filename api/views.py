@@ -16,26 +16,53 @@ class ProductAPI(APIView):
 
     def post(self, request):
         user = request.user
-        serializer = ProductSerializer(data=request.data, context={'user':user})
+
+        serializer = ProductSerializer(
+            data=request.data,
+            context={'user': user}
+        )
+
         if serializer.is_valid():
             serializer.save()
-            return Response('product created successfully', status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response(
+                data='product created successfully',
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            data=serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     def get(self, request, id=None):
         if id:
             product_queryset = Products.objects.filter(id=id).first()
+
             serializer = ProductSerializer(product_queryset, many=False)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+
+            return Response(
+                data=serializer.data,
+                status=status.HTTP_200_OK
+            )
+
         else:
             product_queryset = Products.objects.all()
+
             pages = math.ceil(product_queryset.count()/10)
             paginator = PageNumberPagination()
             paginator.page_size = 10
+
             page = paginator.paginate_queryset(product_queryset, request)
 
             serializer = ProductSerializer(page, many=True)
-            return Response({'response': serializer.data, 'pages': pages}, status=status.HTTP_200_OK)
+
+            return Response(
+                data={
+                    'response': serializer.data,
+                    'pages': pages
+                }
+                , status=status.HTTP_200_OK)
 
 
 class StockAPI(APIView):
@@ -43,30 +70,58 @@ class StockAPI(APIView):
 
     def post(self, request):
         product = request.data.get('product')
-        serializer = StockCreateSerializer(data=request.data, context={'product': product})
+
+        serializer = StockCreateSerializer(
+            data=request.data,
+            context={'product': product}
+        )
+
         if serializer.is_valid():
             serializer.save()
-            return Response('stock added successfully', status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response(
+                data='stock added successfully',
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            data=serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     def delete(self, request, id):
         variant_instance = Variant.objects.filter(id=id).first()
 
         if not variant_instance:
-            return Response({"error": "product not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                data="product not found",
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         variant_instance.delete()
-        return Response({"success": "product deleted successfully"}, status=status.HTTP_200_OK)
+
+        return Response(
+            data="product deleted successfully",
+            status=status.HTTP_200_OK
+        )
 
 
 class UserRegisterAPI(APIView):
     def post(self, request):
         serializer = UserRegisterSerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save()
-            return Response(data='user created successfully',status=status.HTTP_201_CREATED)
 
-        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data='user created successfully',
+                status=status.HTTP_201_CREATED
+            )
+
+        return Response(
+            data=serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class UserLoginAPI(APIView):
@@ -76,10 +131,15 @@ class UserLoginAPI(APIView):
 
         if username is None:
             return Response(
-                data="please enter your username", status=status.HTTP_400_BAD_REQUEST)
+                data="please enter your username",
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         if password is None:
-            return Response(data='please enter your password', status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data='please enter your password',
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         user = authenticate(username=username, password=password)
 
@@ -90,4 +150,7 @@ class UserLoginAPI(APIView):
                 status=status.HTTP_200_OK
             )
         else:
-            return Response(data='invalid username or password', status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                data='invalid username or password',
+                status=status.HTTP_404_NOT_FOUND
+            )
